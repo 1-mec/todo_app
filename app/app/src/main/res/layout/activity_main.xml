@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/body_bg"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="54dp">
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/header_bg"
+                android:gravity="center"
+                android:text="@string/bienvenu_msg"
+                android:textAlignment="center"
+                android:textSize="24sp"
+                android:textStyle="normal|bold"
+                android:visibility="visible" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:id="@+id/mainFrame"
+            android:layout_width="match_parent"
+            android:layout_height="792dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="181dp"
+            android:gravity="bottom|end"
+            android:insetBottom="0dp"
+            android:orientation="vertical">
+
+
+            <Button
+                android:id="@+id/ajouter"
+                android:layout_width="wrap_content"
+                android:layout_height="67dp"
+                android:fontFamily="sans-serif-black"
+                android:shadowColor="@color/black"
+                android:text="@string/ajouter"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                android:textStyle="bold|italic" />
+
+            <Button
+                android:id="@+id/supprimer"
+                android:layout_width="wrap_content"
+                android:layout_height="67dp"
+                android:fontFamily="sans-serif-black"
+                android:shadowColor="@color/black"
+                android:text="@string/supprimer"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                android:textStyle="bold|italic" />
+
+            <Button
+                android:id="@+id/verif"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:fontFamily="sans-serif-black"
+                android:shadowColor="@color/black"
+                android:text="@string/verif"
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textSize="24sp"
+                android:textStyle="bold|italic" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
