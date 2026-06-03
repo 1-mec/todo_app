@@ -1,6 +1,7 @@
 package com.todoapp.fr;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -74,12 +75,14 @@ public class MainActivity extends AppCompatActivity {
                     System.out.println(inputDialog);
                     db.addTaskDb(inputDialog);
                     System.out.println("------"+allTasks+"-----------");
+                    refresh();
                 }
             });
             alertAdd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
+                    refresh();
                 }
             });
             AlertDialog alertDialog = alertAdd.create();
@@ -101,18 +104,21 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         datasource.deleteAllTasks();
+                        refresh();
                     }
                 });
                 alertDelete.setNegativeButton("tâches séléctionnées", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         deleteSelectedOne();
+                        refresh();
                     }
                 });
                 alertDelete.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         dialog.cancel();
+                        refresh();
                     }
                 });
             } catch(Exception e){
@@ -120,7 +126,7 @@ public class MainActivity extends AppCompatActivity {
                 alertDelete.setIcon(R.drawable.ic_launcher_foreground);
                 alertDelete.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface arg0, int arg1) {}
+                    public void onClick(DialogInterface arg0, int arg1) {refresh();}
                 });
             }
             AlertDialog alertDialog = alertDelete.create();
@@ -142,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             layoutVertical.removeAllViews();
             for (Tasks tasks : allTasks){
-                db.findTask(tasks.toString() , allTasks);
                 layoutVertical.addView(makeCheckBox(tasks.toString()));
             }
             if (layoutVertical.getParent() != null) {
@@ -206,4 +211,10 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    public void refresh(){
+        finish();
+        startActivity(getIntent());
+    }
+
 }
