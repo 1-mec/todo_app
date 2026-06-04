@@ -1,11 +1,18 @@
 package com.todoapp.fr;
 
+import android.annotation.TargetApi;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.view.Gravity;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -14,7 +21,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import com.todoapp.fr.sql.NameDataSource;
 import com.todoapp.fr.sql.Tasks;
@@ -36,11 +47,16 @@ public class MainActivity extends AppCompatActivity {
     private NameDataSource datasource;
     private DataBaseFunctions db ;
     private ArrayList<Tasks> allTasks ;
+    private ArrayList<Tasks> selectedTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
+
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
         mainFrame = findViewById(R.id.mainFrame);
@@ -57,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         inputDialog = "";
         tmp = tr.getTasks();
         lstChbx = new ArrayList<>();
+        selectedTask = new ArrayList<>();
 
         display();
 
@@ -65,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
             alertAdd.setTitle("Ajout de la tâche");
             alertAdd.setIcon(R.drawable.ic_launcher_foreground);
             final EditText input = new EditText(MainActivity.this);
-            input.setInputType(InputType.TYPE_CLASS_TEXT );
+            input.setInputType(InputType.TYPE_CLASS_TEXT);
             alertAdd.setView(input);
             alertAdd.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                 @Override
@@ -73,7 +90,8 @@ public class MainActivity extends AppCompatActivity {
                     inputDialog = input.getText().toString();
                     System.out.println(inputDialog);
                     db.addTaskDb(inputDialog);
-                    System.out.println("------"+allTasks+"-----------");
+                    System.out.println("------" + allTasks + "-----------");
+                    refresh();
                 }
             });
             alertAdd.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -86,7 +104,6 @@ public class MainActivity extends AppCompatActivity {
             alertDialog.show();
             display();
         });
-        
 
         verif.setOnClickListener(v -> {
             test();
@@ -94,19 +111,21 @@ public class MainActivity extends AppCompatActivity {
 
         supprimer.setOnClickListener(v -> {
             AlertDialog.Builder alertDelete = new AlertDialog.Builder(this);
-            try{
+            try {
                 alertDelete.setTitle("Suppression de tâchê(s)");
                 alertDelete.setIcon(R.drawable.ic_launcher_foreground);
                 alertDelete.setPositiveButton("toutes les tâches", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         datasource.deleteAllTasks();
+                        refresh();
                     }
                 });
                 alertDelete.setNegativeButton("tâches séléctionnées", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface arg0, int arg1) {
                         deleteSelectedOne();
+                        refresh();
                     }
                 });
                 alertDelete.setNeutralButton("Cancel", new DialogInterface.OnClickListener() {
@@ -115,18 +134,28 @@ public class MainActivity extends AppCompatActivity {
                         dialog.cancel();
                     }
                 });
-            } catch(Exception e){
+            } catch (Exception e) {
                 alertDelete.setTitle("Désolé , ça n'a pas marché");
                 alertDelete.setIcon(R.drawable.ic_launcher_foreground);
                 alertDelete.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
                     @Override
-                    public void onClick(DialogInterface arg0, int arg1) {}
+                    public void onClick(DialogInterface arg0, int arg1) {
+                        refresh();
+                    }
                 });
             }
             AlertDialog alertDialog = alertDelete.create();
             alertDialog.show();
             display();
-        } );
+        });
+
+        for (CheckBox ch : lstChbx){
+            ch.setOnClickListener(v -> {
+                addSelectTask();
+            });
+        }
+
+
     }
 
     public void display(){
@@ -142,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
         } else {
             layoutVertical.removeAllViews();
             for (Tasks tasks : allTasks){
-                db.findTask(tasks.toString() , allTasks);
                 layoutVertical.addView(makeCheckBox(tasks.toString()));
             }
             if (layoutVertical.getParent() != null) {
@@ -200,9 +228,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void deleteSelectedOne(){
-        for (CheckBox ch : lstChbx){
-            if (ch.isChecked()){
-                db.deleteTaskDb(ch.getText().toString());
+        for (Tasks ch : selectedTask){
+            datasource.deleteTasks(ch);
+        }
+    }
+
+    public void refresh(){
+        finish();
+        startActivity(getIntent());
+    }
+
+    public void addSelectTask(){
+        for(int i = 0 ; lstChbx.size() > i ; i++){
+            if(lstChbx.get(i).isChecked()){
+                selectedTask.add(allTasks.get(i));
             }
         }
     }

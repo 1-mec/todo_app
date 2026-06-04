@@ -21,6 +21,6 @@ public class Tasks {
 
     @Override
     public String toString() {
-        return "-> "+task+"\n" ;
+        return task ;
     }
 }
