@@ -1,16 +1,11 @@
 package com.todoapp.fr;
 
-import android.annotation.TargetApi;
 import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.text.InputType;
 import android.view.Gravity;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -18,15 +13,11 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.WindowCompat;
-import androidx.core.view.WindowInsetsCompat;
-import androidx.core.view.WindowInsetsControllerCompat;
-
 import com.todoapp.fr.sql.NameDataSource;
 import com.todoapp.fr.sql.Tasks;
 import com.todoapp.fr.sql.DataBaseFunctions;
@@ -39,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<CheckBox> lstChbx ;
     private Button ajouter;
     private LinearLayout layoutVertical;
-    private FrameLayout mainFrame;
+    private ScrollView mainFrame;
     private Button supprimer;
     private Button verif;
     private ArrayList<String> tmp ;
@@ -48,32 +39,40 @@ public class MainActivity extends AppCompatActivity {
     private DataBaseFunctions db ;
     private ArrayList<Tasks> allTasks ;
     private ArrayList<Tasks> selectedTask;
+    private FrameLayout btn_container;
+    private ScrollView scroll;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
+        EdgeToEdge.enable(this);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
+
 
         mainFrame = findViewById(R.id.mainFrame);
         ajouter = findViewById(R.id.ajouter);
         supprimer = findViewById(R.id.supprimer);
         verif = findViewById(R.id.verif);
+        btn_container = findViewById(R.id.btn_container);
 
         datasource = new NameDataSource(this);
         datasource.open();
         db = new DataBaseFunctions(this);
         allTasks = datasource.getAllTasks();
+        scroll = new ScrollView(this);
+        scroll.canScrollVertically(1);
         layoutVertical = new LinearLayout(this);
         layoutVertical.setOrientation(LinearLayout.VERTICAL);
         inputDialog = "";
         tmp = tr.getTasks();
         lstChbx = new ArrayList<>();
         selectedTask = new ArrayList<>();
+        btn_container.post(() -> {
+            int height = btn_container.getHeight();
+            mainFrame.setTranslationY(height);
+        });
 
         display();
 
@@ -163,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
         mainFrame.removeAllViews();
         if (allTasks == null || datasource.isTasksEmpty()){
             TextView tv = new TextView(this);
-            tv.setText(R.string.not_tasks);
+            tv.setText(R.string.lorem_ipsum);
             tv.setGravity(Gravity.CENTER);
             tv.setTextSize(36);
             tv.setTextColor(Color.parseColor("#666666"));
@@ -187,7 +186,6 @@ public class MainActivity extends AppCompatActivity {
         ch.setText(act);
         ch.setTextColor(Color.parseColor("black"));
         ch.setTextSize(24);
-        ch.setTranslationY(169);
         lstChbx.add(ch);
         return ch ;
     }
